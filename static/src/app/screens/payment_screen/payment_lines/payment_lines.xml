@@ -1,0 +1,67 @@
+<templates id="template" xml:space="preserve">
+    <t t-name="l10n_ec_payment_pos.PaymentScreenPaymentLinesExtended"
+       t-inherit="point_of_sale.PaymentScreenPaymentLines"
+       t-inherit-mode="extension">
+
+        <!-- <xpath expr="//div[contains(@class,'paymentlines') and contains(@class,'d-flex')]" position="after">
+        </xpath> -->
+        <xpath expr="//div[contains(@t-attf-class,'paymentline selected')]" position="after">
+          <div t-if="line.isSelected()" class="paymentline extra-fields-line px-3 py-3 bg-200">
+              <!-- Contenedor responsive: vertical en pantallas pequeñas, horizontal en pantallas grandes -->
+              <div class="d-flex flex-column flex-md-row gap-4 align-items-start ">
+
+                  <!-- Cuenta Bancaria -->
+                  <!-- <t t-if="(line.journal_ids_allowed || []).length > 0"> -->
+                      <div class="d-flex flex-column">
+                          <span class="fw-bold text-secondary">Cuenta Bancaria</span>
+                          <div class="position-relative mt-1" style="width:180px;">
+                              <button class="w-100 text-start d-flex align-items-center justify-content-between bg-white border border-secondary"
+                                      style="border-radius: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
+                                      t-on-click.stop="() => this._toggleJournalOptions(line)">
+                                  <t t-set="selectedJournal"
+                                     t-value="(line.journal_ids_allowed || []).find(j => j.id === line.journal_id)"/>
+                                  <span class="text-truncate">
+                                      <t t-esc="selectedJournal ? selectedJournal.name : 'Seleccionar Cuenta Bancaria'"/>
+                                  </span>
+                                  <i class="fa fa-caret-down ms-2"/>
+                              </button>
+                              <ul t-if="line.showJournalOptions" class="dropdown-menu w-100 bg-white">
+                                  <t t-foreach="(line.journal_ids_allowed || [])" t-as="journal" t-key="journal.id">
+                                      <li>
+                                          <a class="dropdown-item"
+                                             t-on-click="() => this._onSelectJournal(line, journal)">
+                                              <t t-esc="journal.name"/>
+                                          </a>
+                                      </li>
+                                  </t>
+                              </ul>
+                          </div>
+                      </div>
+                  <!-- </t> -->
+
+                  <!-- Nro Comprobante -->
+                  <div class="d-flex flex-column">
+                      <span class="fw-bold text-secondary">Nro Comprobante</span>
+                      <input type="text"
+                             class="form-control bg-white mt-1"
+                             style="width:180px; border:1px solid #ced4da;"
+                             t-att-value="line.payment_ref_no || ''"
+                             t-on-change="(ev) => this._onPaymentRefChange(line, ev.target.value)"/>
+                  </div>
+
+                  <!-- Fecha Transaccion -->
+                  <div class="d-flex flex-column">
+                      <span class="fw-bold text-secondary">Fecha Transaccion</span>
+                      <input type="date"
+                             class="form-control bg-white mt-1"
+                             style="width:180px; border:1px solid #ced4da;"
+                             t-att-value="line.transaction_date || ''"
+                             t-on-change="(ev) => this._onTransactionDateChange(line, ev.target.value)"/>
+                  </div>
+
+              </div>
+          </div>
+
+        </xpath>
+    </t>
+</templates>
