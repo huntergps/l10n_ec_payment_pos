@@ -1,0 +1,37 @@
+.styled-select {
+    margin: 4px auto;
+    min-width: 90%;
+    min-height: 33px;
+    background: white;
+    border: none;
+    box-shadow: 0px 0px 0px 1px rgb(220, 220, 220) inset;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #333;
+    cursor: pointer;
+    padding: 4px 8px;
+    width:auto !important;
+    &:focus {
+        outline: none;
+        box-shadow: 0px 0px 0px 2px rgb(100, 150, 255) inset;
+    }
+
+    option {
+      white-space: normal; // Permite el ajuste de texto en varias líneas
+
+        padding: 8px;
+        background: #fff;
+        color: #333;
+
+        &:hover {
+            background: #f0f0f0;
+        }
+    }
+}
+
+.card_brand_id,
+.card_deadline_id,
+.journal_id,
+.bank_id {
+    @extend .styled-select; // Extiende la clase base para reutilización
+}

@@ -3,65 +3,154 @@
        t-inherit="point_of_sale.PaymentScreenPaymentLines"
        t-inherit-mode="extension">
 
-        <!-- <xpath expr="//div[contains(@class,'paymentlines') and contains(@class,'d-flex')]" position="after">
-        </xpath> -->
         <xpath expr="//div[contains(@t-attf-class,'paymentline selected')]" position="after">
-          <div t-if="line.isSelected()" class="paymentline extra-fields-line px-3 py-3 bg-200">
-              <!-- Contenedor responsive: vertical en pantallas pequeñas, horizontal en pantallas grandes -->
-              <div class="d-flex flex-column flex-md-row gap-4 align-items-start ">
-
-                  <!-- Cuenta Bancaria -->
-                  <!-- <t t-if="(line.journal_ids_allowed || []).length > 0"> -->
-                      <div class="d-flex flex-column">
-                          <span class="fw-bold text-secondary">Cuenta Bancaria</span>
-                          <div class="position-relative mt-1" style="width:180px;">
-                              <button class="w-100 text-start d-flex align-items-center justify-content-between bg-white border border-secondary"
-                                      style="border-radius: 0.25rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"
-                                      t-on-click.stop="() => this._toggleJournalOptions(line)">
-                                  <t t-set="selectedJournal"
-                                     t-value="(line.journal_ids_allowed || []).find(j => j.id === line.journal_id)"/>
-                                  <span class="text-truncate">
-                                      <t t-esc="selectedJournal ? selectedJournal.name : 'Seleccionar Cuenta Bancaria'"/>
-                                  </span>
-                                  <i class="fa fa-caret-down ms-2"/>
-                              </button>
-                              <ul t-if="line.showJournalOptions" class="dropdown-menu w-100 bg-white">
-                                  <t t-foreach="(line.journal_ids_allowed || [])" t-as="journal" t-key="journal.id">
-                                      <li>
-                                          <a class="dropdown-item"
-                                             t-on-click="() => this._onSelectJournal(line, journal)">
-                                              <t t-esc="journal.name"/>
-                                          </a>
-                                      </li>
-                                  </t>
-                              </ul>
-                          </div>
-                      </div>
-                  <!-- </t> -->
-
+          <div t-if="line.isSelected() and line.isCreditCardPayment()" class="paymentline extra-fields-line px-3 py-3 bg-secondary">
+            <div class="d-flex flex-column flex-md-row gap-2 align-items-start ">
+                <!-- Tipo de Tarjeta -->
+                <div class="d-flex flex-column">
+                    <span class="fw-bold text-primary">Tipo de Tarjeta</span>
+                    <select class="form-control bg-white mt-1"
+                            t-att-value="line.card_type || ''"
+                            t-on-change="(ev) => this._onCardTypeChange(line, ev.target.value)">
+                        <option value="">Seleccione una opción</option>
+                        <option value="card_credit">Tarjeta de Crédito</option>
+                        <option value="card_debit">Tarjeta de Débito</option>
+                    </select>
+                </div>
+                <!-- Nro Comprobante -->
+                <div class="d-flex flex-column">
+                    <span class="fw-bold text-primary">Nro Transaccion</span>
+                    <input type="text"
+                           class="form-control bg-white mt-1"
+                           style="width:130px; border:1px solid #ced4da;"
+                           t-att-value="line.payment_ref_no || ''"
+                           t-on-change="(ev) => this._onPaymentRefNoChange(line, ev.target.value)"/>
+                </div>
+                <!-- Nro Comprobante -->
+                <div class="d-flex flex-column">
+                    <span class="fw-bold text-primary">Nro Lote</span>
+                    <input type="text"
+                           class="form-control bg-white mt-1"
+                           style="width:130px; border:1px solid #ced4da;"
+                           t-att-value="line.payment_ref_no || ''"
+                           t-on-change="(ev) => this._onPaymentRefNoChange(line, ev.target.value)"/>
+                </div>
+                <!-- Fecha Transaccion -->
+                <div class="d-flex flex-column">
+                    <span class="fw-bold text-primary">Fecha</span>
+                    <input type="date"
+                           class="form-control bg-white mt-1"
+                           style="width:125px; border:1px solid #ced4da;"
+                           t-att-value="line.transaction_date || ''"
+                           t-on-change="(ev) => this._onTransactionDateChange(line, ev.target.value)"/>
+                </div>
+                <!-- Marca Tarjeta -->
+                <div class="d-flex flex-column">
+                    <span class="fw-bold text-primary">Marca</span>
+                    <select id="card_brand_id" class="card_brand_id" name='card_brand_id' t-model="line.card_brand_id" required="required"
+                      t-on-change="(ev) => this._onBankIdChange(line, ev.target.value)">
+                        <t t-foreach='env.services.pos.card_brands' t-as="brand" t-key="brand.id">
+                            <option t-att-value='brand.id'>
+                                <t t-esc='brand.name'/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                <!-- Plazo Tarjeta -->
+                <div class="d-flex flex-column">
+                    <span class="fw-bold text-primary">Plazo</span>
+                    <select id="card_deadline_id" class="card_deadline_id" name='card_deadline_id' t-model="line.card_deadline_id" required="required"
+                      t-on-change="(ev) => this._onBankIdChange(line, ev.target.value)">
+                        <t t-foreach='env.services.pos.card_deadlines' t-as="deadline" t-key="deadline.id">
+                            <option t-att-value='deadline.id'>
+                                <t t-esc='deadline.name'/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+            </div>
+          </div>
+          <div t-if="line.isSelected() and line.isBankTransaccionPayment()" class="paymentline extra-fields-line px-3 py-3 bg-secondary">
+              <div class="d-flex flex-column flex-md-row gap-2 align-items-start ">
+                <t t-if="(line.journal_ids_allowed || []).length > 0">
+                  <!-- Tipo de Transacción -->
+                <div class="d-flex flex-column">
+                    <span class="fw-bold text-primary">Tipo de Transacción</span>
+                    <select class="form-control bg-white mt-1"
+                            t-att-value="line.transaction_type || ''"
+                            t-on-change="(ev) => this._onTransactionTypeChange(line, ev.target.value)">
+                        <option value="">Seleccione una opción</option>
+                        <option value="transfer">Transferencia</option>
+                        <option value="deposit">Depósito de Efectivo</option>
+                        <option value="check">Depósito de Cheque</option>
+                    </select>
+                </div>
+                    <!-- Cuenta Bancaria -->
+                    <div class="d-flex flex-column">
+                        <span class="fw-bold text-primary">Cuenta Bancaria</span>
+                        <select id="journal_id" class="journal_id" name='journal_id' t-model="line.journal_id" required="required"
+                          t-on-change="(ev) => this._onJournalIdChange(line, ev.target.value)">
+                            <t t-foreach='line.journal_ids_allowed' t-as="journal" t-key="journal.id">
+                                <option t-att-value='journal.id'>
+                                    <t t-esc='journal.name'/>
+                                </option>
+                            </t>
+                        </select>
+                    </div>
+                </t>
                   <!-- Nro Comprobante -->
                   <div class="d-flex flex-column">
-                      <span class="fw-bold text-secondary">Nro Comprobante</span>
+                      <span class="fw-bold text-primary">Nro Transaccion</span>
                       <input type="text"
                              class="form-control bg-white mt-1"
-                             style="width:180px; border:1px solid #ced4da;"
+                             style="width:130px; border:1px solid #ced4da;"
                              t-att-value="line.payment_ref_no || ''"
-                             t-on-change="(ev) => this._onPaymentRefChange(line, ev.target.value)"/>
+                             t-on-change="(ev) => this._onPaymentRefNoChange(line, ev.target.value)"/>
                   </div>
-
                   <!-- Fecha Transaccion -->
                   <div class="d-flex flex-column">
-                      <span class="fw-bold text-secondary">Fecha Transaccion</span>
+                      <span class="fw-bold text-primary">Fecha</span>
                       <input type="date"
                              class="form-control bg-white mt-1"
-                             style="width:180px; border:1px solid #ced4da;"
+                             style="width:125px; border:1px solid #ced4da;"
                              t-att-value="line.transaction_date || ''"
                              t-on-change="(ev) => this._onTransactionDateChange(line, ev.target.value)"/>
                   </div>
 
               </div>
+              <div   t-if="line.transaction_type=='transfer'"  class="d-flex flex-column flex-md-row gap-2 align-items-start ">
+                <div class="d-flex flex-column">
+                    <span class="fw-bold text-primary">Banco</span>
+                    <select id="bank_id" class="bank_id" name='bank_id' t-model="line.bank_id" required="required"
+                      t-on-change="(ev) => this._onBankIdChange(line, ev.target.value)">
+                        <t t-foreach='env.services.pos.banks' t-as="bank" t-key="bank.id">
+                            <option t-att-value='bank.id'>
+                                <t t-esc='bank.name'/>
+                            </option>
+                        </t>
+                    </select>
+                </div>
+                <!-- Nro Cuenta -->
+                <div class="d-flex flex-column">
+                    <span class="fw-bold text-primary">Nro Cuenta</span>
+                    <input type="text"
+                           class="form-control bg-white mt-1"
+                           style="width:125px; border:1px solid #ced4da;"
+                           t-att-value="line.bank_account_no || ''"
+                           t-on-change="(ev) => this._onBankAccountNoChange(line, ev.target.value)"
+                           />
+                </div>
+                <!-- Titular -->
+                <div class="d-flex flex-column">
+                    <span class="fw-bold text-primary">Titular</span>
+                    <input type="text"
+                           class="form-control bg-white mt-1"
+                           style=" border:1px solid #ced4da;"
+                           t-att-value="line.bank_account_owner_name || ''"
+                           t-on-change="(ev) => this._onBankAccountOwnerNameChange(line, ev.target.value)"/>
+                </div>
+              </div>
           </div>
-
         </xpath>
     </t>
 </templates>

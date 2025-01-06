@@ -1,0 +1,23 @@
+.combo-list {
+    position: relative; // Asegura que el posicionamiento absoluto del dropdown se base en este contenedor
+
+    .options {
+        position: absolute; // Posiciona el dropdown de manera absoluta respecto a .combo-list
+        top: 100%; // Coloca el dropdown justo debajo del contenedor
+        left: 0;   // Alinea el dropdown con el borde izquierdo del contenedor
+        right: 0;  // Extiende el dropdown hasta el borde derecho del contenedor
+        z-index: 1050; // Asegura que el dropdown se muestre por encima de otros elementos
+        max-height: 200px; // Define una altura máxima para el dropdown
+        overflow-y: auto; // Permite el desplazamiento si hay muchas opciones
+        background-color: #fff; // Fondo blanco para el dropdown
+        border: 1px solid #ced4da; // Borde para destacar el dropdown
+        border-radius: 4px; // Bordes redondeados
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1); // Sombra para dar profundidad
+    }
+
+    .dropdown-item {
+        white-space: normal; // Permite el ajuste de texto en varias líneas
+        padding: 0px;   // Espaciado interno para mejor visibilidad
+        cursor: pointer;     // Cursor en forma de mano para indicar que es seleccionable
+    }
+}

@@ -15,3 +15,22 @@ _logger = logging.getLogger(__name__)
 
 class PosOrder(models.Model):
     _inherit = 'pos.order'
+
+    @api.model
+    def sync_from_ui(self, orders):
+        for order in orders:
+            print(order)
+        result = super().sync_from_ui(orders)
+        return result
+
+
+
+    @api.model_create_multi
+    def create(self, vals_list):
+        res = super(PosOrder, self).create(vals_list)
+        for rec in res:
+            if rec.seller_pos_id:
+                rec.seller_user_id = rec.seller_pos_id
+            if rec.employee_pos_id:
+                rec.employee_user_id = rec.employee_pos_id
+        return res

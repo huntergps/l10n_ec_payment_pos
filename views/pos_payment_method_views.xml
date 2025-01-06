@@ -5,6 +5,11 @@
         <field name="model">pos.payment.method</field>
         <field name="inherit_id" ref="point_of_sale.pos_payment_method_view_form"/>
         <field name="arch" type="xml">
+            <xpath expr="//field[@name='payment_method_type']" position="after">
+              <field name="type" />
+              <field name="payment_type" />
+              <field name="config_ids" />
+            </xpath>
             <xpath expr="//field[@name='company_id']" position="after">
               <field name="allowed_journal_ids" invisible="country_code != 'EC'">
                           <list editable="bottom">

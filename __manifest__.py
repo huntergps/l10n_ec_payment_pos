@@ -19,11 +19,16 @@
         'purchase',
         'point_of_sale',
         'l10n_ec_edi_pos',
-
+        'l10n_ec_payment',
     ],
     'data': [
         'security/ir.model.access.csv',
         'views/pos_payment_method_views.xml',
+        'views/pos_payment_views.xml',
+        'views/res_bank_view.xml',
+        'views/account_credit_card_brand_view.xml',
+        'views/account_credit_card_deadline_view.xml',
+        
     ],
     'assets': {
         'point_of_sale._assets_pos': [
